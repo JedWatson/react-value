@@ -24,6 +24,8 @@ class Input extends Component {
   }
 }
 
+const InputWithValue = withValue(Input);
+
 const AltProps = ({ altValue, altOnChange, ...props }) => (
   <Input value={altValue} onChange={altOnChange} {...props} />
 );
@@ -32,8 +34,6 @@ const AltPropsWithValue = withValue(AltProps, {
   valueProp: 'altValue',
   onChangeProp: 'altOnChange',
 });
-
-const InputWithValue = withValue(Input);
 
 class App extends Component {
   render() {
