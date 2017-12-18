@@ -33,16 +33,21 @@ type WithValueProps = {
   onChange: (value: any) => void,
 };
 
-export const withValue = (Component: ComponentType<*>) => ({
-  defaultValue,
-  onChange,
-  ...props
-}: WithValueProps) => (
-  <Value
-    onChange={onChange}
-    defaultValue={defaultValue}
-    render={(value, onChange) => (
-      <Component {...props} onChange={onChange} value={value} />
-    )}
-  />
-);
+export const withValue = (
+  Component: ComponentType<*>,
+  { valueProp, onChangeProp }: { valueProp: string, onChangeProp: string } = {}
+) => ({ defaultValue, onChange, ...props }: WithValueProps) => {
+  return (
+    <Value
+      onChange={onChange}
+      defaultValue={defaultValue}
+      render={(value, onChange) => {
+        const valueProps = {
+          [valueProp || 'value']: value,
+          [onChangeProp || 'onChange']: onChange,
+        };
+        return <Component {...props} {...valueProps} />;
+      }}
+    />
+  );
+};
