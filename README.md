@@ -36,6 +36,21 @@ const MyInputWithValue = withValue(MyInput);
 <MyInputWithValue defaultValue="Hello World" />
 ```
 
+### Custom Prop Names
+
+If you want to use the HOC but the component you're wrapping uses different props for `value` and `onChange`, you can map them using the second options argument. For example, if the component expects `onValueUpdated` and `currentValue` props:
+
+```jsx
+import { withValue } from 'react-value';
+
+const MyInputWithValue = withValue(MyInput, {
+  onChangeProp: 'onValueUpdated',
+  valueProp: 'currentValue',
+});
+
+<MyInputWithValue defaultValue="Hello World" />
+```
+
 # License
 
 Copyright (c) 2017 Jed Watson. MIT Licensed.
