@@ -1,20 +1,9 @@
 {
-  "name": "react-value",
-  "description": "Adds Value to React",
-  "version": "0.2.0",
-  "main": "lib/index.js",
-  "author": "Jed Watson",
-  "license": "MIT",
-  "files": [
-    "lib"
-  ],
-  "keywords": [
-    "form",
-    "input",
-    "react",
-    "react-component"
-  ],
   "devDependencies": {
+    "enzyme": "^3.2.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "babel-jest": "^22.0.3",
+    "jest": "^22.0.3",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
@@ -32,12 +21,36 @@
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7"
   },
-  "peerDependencies": {
-    "react": "^15.0 || ^16.0"
+  "jest": {
+    "setupFiles": [
+      "./jest/setup-enzyme"
+    ],
+    "modulePathIgnorePatterns": [
+      "./node_modules"
+    ]
   },
   "scripts": {
+    "test": "jest",
     "build": "babel src -d lib",
     "start": "webpack-dev-server --progress"
+  },
+  "name": "react-value",
+  "description": "Adds Value to React",
+  "version": "0.2.0",
+  "main": "lib/index.js",
+  "author": "Jed Watson",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "keywords": [
+    "form",
+    "input",
+    "react",
+    "react-component"
+  ],
+  "peerDependencies": {
+    "react": "^15.0 || ^16.0"
   },
   "repository": {
     "type": "git",
