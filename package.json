@@ -2,6 +2,8 @@
   "devDependencies": {
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.1.1",
+    "eslint-plugin-flowtype": "^2.40.1",
+    "flow-bin": "^0.61.0",
     "babel-jest": "^22.0.3",
     "jest": "^22.0.3",
     "babel-cli": "^6.26.0",
@@ -13,7 +15,6 @@
     "babel-preset-react": "^6.24.1",
     "conartist": "^0.15.0",
     "css-loader": "^0.28.7",
-    "flow-bin": "^0.61.0",
     "html-webpack-plugin": "^2.30.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
