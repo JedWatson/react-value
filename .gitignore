@@ -10,8 +10,6 @@ yarn-error.log*
 lib-cov
 # Coverage directory used by tools like istanbul
 coverage
-# Dependency directories
-node_modules/
 # Optional eslint cache
 .eslintcache
 # Optional REPL history
