@@ -1,4 +1,7 @@
 {
   "plugins": ["transform-class-properties", "transform-object-rest-spread"],
-  "presets": ["react", "env"]
+  "presets": ["react", "env"],
+  "env": {
+    "plugins": ["transform-es2015-modules-commonjs"]
+  }
 }
