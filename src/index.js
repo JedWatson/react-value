@@ -2,20 +2,21 @@
 
 import React, { Component, type ComponentType, type Node } from 'react';
 
-type ValueProps = {
-  defaultValue: any,
-  onChange: (value: any) => void,
-  render: (value: any, onChange: (value: any) => void) => Node,
+type ValueProps<T> = {
+  defaultValue: T,
+  onChange?: (value: T) => void,
+  render: (value: T, onChange: (value: T) => void) => Node,
 };
+
 type ValueState = {
   value: any,
 };
 
-export class Value extends Component<ValueProps, ValueState> {
-  constructor(props: ValueProps) {
-    super(props);
-    this.state = { value: props.defaultValue };
-  }
+export class Value<T> extends Component<ValueProps<T>, ValueState> {
+  state = {
+    value: this.props.defaultValue 
+  };
+
   onChange = (value: any) => {
     const { onChange } = this.props;
     this.setState({ value });
@@ -23,8 +24,10 @@ export class Value extends Component<ValueProps, ValueState> {
       onChange(value);
     }
   };
+
   render() {
-    return this.props.render(this.state.value, this.onChange);
+    const value: any = this.state.value;
+    return this.props.render(value, this.onChange);
   }
 }
 
