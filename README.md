@@ -19,11 +19,9 @@ import { Value } from 'react-value';
 
 <Value
   defaultValue={defaultValue} // optional
-  onChange={(newValue) => null} // optional
-  render={(value, onChange) => (
-    <MyInput onChange={onChange} value={value} />
-  )}
-/>
+  onChange={newValue => null} // optional
+  render={(value, onChange) => <MyInput onChange={onChange} value={value} />}
+/>;
 ```
 
 ..or for repeated use, you can use the `withValue` HOC:
@@ -33,7 +31,7 @@ import { withValue } from 'react-value';
 
 const MyInputWithValue = withValue(MyInput);
 
-<MyInputWithValue defaultValue="Hello World" />
+<MyInputWithValue defaultValue="Hello World" />;
 ```
 
 ### Custom Prop Names
@@ -48,9 +46,9 @@ const MyInputWithValue = withValue(MyInput, {
   valueProp: 'currentValue',
 });
 
-<MyInputWithValue defaultValue="Hello World" />
+<MyInputWithValue defaultValue="Hello World" />;
 ```
 
 # License
 
-Copyright (c) 2017 Jed Watson. MIT Licensed.
+Copyright (c) 2018 Jed Watson. MIT Licensed.
