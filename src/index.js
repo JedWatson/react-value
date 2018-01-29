@@ -1,53 +1,52 @@
 // @flow
 
-import React, { Component, type ComponentType, type Node } from 'react';
+import React, { Component } from "react";
 
-type ValueProps = {
-  defaultValue: any,
-  onChange: (value: any) => void,
-  render: (value: any, onChange: (value: any) => void) => Node,
-};
-type ValueState = {
-  value: any,
+type Options = {
+  map: OptionsMap
 };
 
-export class Value extends Component<ValueProps, ValueState> {
-  constructor(props: ValueProps) {
-    super(props);
-    this.state = { value: props.defaultValue };
+type OptionsMap = {
+  [string]: string
+};
+
+const defaultOptions: Options = {
+  map: {
+    value: "onChange"
   }
-  onChange = (value: any) => {
-    const { onChange } = this.props;
-    this.setState({ value });
-    if (typeof onChange === 'function') {
-      onChange(value);
+};
+
+function createFunc(comp, propName, funcName) {
+  return function(value: any) {
+    const func = comp.props[funcName];
+    comp.setState({ [propName]: value });
+    if (typeof func === "function") {
+      func(value);
     }
   };
-  render() {
-    return this.props.render(this.state.value, this.onChange);
-  }
 }
 
-type WithValueProps = {
-  defaultValue: any,
-  onChange: (value: any) => void,
-};
-
-export const withValue = (
-  Component: ComponentType<*>,
-  { valueProp, onChangeProp }: { valueProp: string, onChangeProp: string } = {}
-) => ({ defaultValue, onChange, ...props }: WithValueProps) => {
-  return (
-    <Value
-      onChange={onChange}
-      defaultValue={defaultValue}
-      render={(value, onChange) => {
-        const valueProps = {
-          [valueProp || 'value']: value,
-          [onChangeProp || 'onChange']: onChange,
-        };
-        return <Component {...props} {...valueProps} />;
-      }}
-    />
+function createFuncsAndProps(comp, map) {
+  return Object.keys(map).reduce(
+    (result, propName) => {
+      const funcName = map[propName];
+      result.funcs[funcName] = createFunc(comp, propName, funcName);
+      result.props[propName] = comp.props[propName];
+      return result;
+    },
+    {
+      funcs: {},
+      props: {}
+    }
   );
+}
+
+export const withValue = (Comp: Class<Component<*>>, options: Options) => {
+  options = { ...defaultOptions, ...options };
+  return class extends Component<Object, Object> {
+    render() {
+      const mapped = createFuncsAndProps(this, options.map);
+      return <Comp {...this.props} {...mapped.funcs} {...mapped.props} />;
+    }
+  };
 };
