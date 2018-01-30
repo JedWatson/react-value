@@ -1,77 +1,74 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import { withValue } from 'react-value';
 import './index.css';
 
 const inc = i => (i || 0) + 1;
 
-const logChange = name => value =>
-  console.log(`${name} value updated: ${value}`);
+const logChange = name => value => console.log(`${name}: ${value}`);
 
 class Input extends Component {
+  state = {
+    value: this.props.defaultValue || 0,
+  };
   onClick = () => {
-    this.props.onChange(inc(this.props.value));
+    this.setState(state => {
+      return {
+        value: state.value + 1,
+      };
+    });
   };
   render() {
-    return (
-      <div>
-        <pre>{this.props.value}</pre>
-        <button onClick={this.onClick}>increment</button>
-      </div>
-    );
+    return <button onClick={this.onClick}>Increment {this.state.value}</button>;
   }
 }
 
 class InputWithMapping extends Component {
+  state = {
+    altProp: this.props.defaultAltProp || 0,
+  };
   onClick = () => {
-    this.props.altHandler(inc(this.props.altProp));
+    this.setState(
+      state => ({ altProp: state.altProp + 1 }),
+      () => this.props.altHandler(this.state.altProp)
+    );
   };
   render() {
     return (
-      <div>
-        <pre>{this.props.altProp}</pre>
-        <button onClick={this.onClick}>increment</button>
-      </div>
+      <button onClick={this.onClick}>Increment {this.state.altProp}</button>
     );
   }
 }
 
 class Toggle extends Component {
+  state = {
+    isOpen: this.props.isOpenByDefault || false,
+  };
   handleToggle = () => {
-    if (this.props.isOpen) {
-      this.props.onClose();
-    } else {
-      this.props.onOpen();
-    }
+    this.setState(
+      state => ({ isOpen: !state.isOpen }),
+      () => (this.state.isOpen ? this.props.onOpen() : this.props.onClose())
+    );
   };
   render() {
     return (
       <button onClick={this.handleToggle}>
-        Toggle ({this.props.isOpen ? 'open' : 'closed'})
+        Toggle ({this.state.isOpen ? 'open' : 'closed'})
       </button>
     );
   }
 }
 
 const Example = withValue(Input);
-const ExampleWithMapping = withValue(InputWithMapping, {
-  altProp: {
-    defaultName: 'defaultAltProp',
-    handlers: {
-      altHandler: v => v,
-    },
-  },
-});
-const ExampleWithMultiProps = withValue(Toggle, {
-  isOpen: {
-    defaultName: 'isOpenByDefault',
-    defaultValue: false,
-    handlers: {
-      onClose: () => false,
-      isOpen: () => true,
-    },
-  },
-});
+const ExampleWithMapping = withValue(InputWithMapping);
+const ExampleWithMultiProps = withValue(Toggle);
+
+const Sample = ({ children, name }) => (
+  <Fragment>
+    <h3 style={{ textTransform: 'capitalize' }}>{name}</h3>
+    {children(logChange(name))}
+  </Fragment>
+);
 
 class App extends Component {
   render() {
@@ -91,23 +88,32 @@ class App extends Component {
           values for all values you're mapping.
         </p>
 
-        <h3>Basic Example (uncontrolled)</h3>
-        <Example onChange={logChange('Basic')} defaultValue={1} />
-
-        <h3>Default Value (controlled)</h3>
-        <Example onChange={logChange('Default value')} defaultValue={2} />
-
-        <h3>Alternate Prop Names (uncontrolled)</h3>
-        <ExampleWithMapping
-          altHandler={logChange('Alt Props')}
-          defaultAltProp={3}
-        />
-
-        <h3>Handling several props via a single map</h3>
-        <ExampleWithMultiProps
-          onClose={logChange('Closed')}
-          onOpen={logChange('Open')}
-        />
+        <Sample name="Basic (controlled)">
+          {log => <Example onChange={log} value={1} />}
+        </Sample>
+        <Sample name="Basic (uncontrolled)">
+          {log => <Example onChange={log} defaultValue={2} />}
+        </Sample>
+        <Sample name="Alternat prop name (controlled)">
+          {log => <ExampleWithMapping altHandler={log} altProp={3} />}
+        </Sample>
+        <Sample name="Alternat prop name (uncontrolled)">
+          {log => <ExampleWithMapping altHandler={log} defaultAltProp={4} />}
+        </Sample>
+        <Sample name="Multiple props (controlled)">
+          {log => (
+            <ExampleWithMultiProps onClose={log} onOpen={log} isOpen={true} />
+          )}
+        </Sample>
+        <Sample name="Multiple props (uncontrolled)">
+          {log => (
+            <ExampleWithMultiProps
+              onClose={log}
+              onOpen={log}
+              isOpenByDefault={true}
+            />
+          )}
+        </Sample>
       </div>
     );
   }
