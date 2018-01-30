@@ -2,6 +2,14 @@
 
 import React, { Component } from "react";
 
+type Comp = Component<Props, State>;
+type Ctor = Class<Component<any>>;
+
+type Mapped = {
+  funcs: { [string]: Function },
+  props: { [string]: any }
+};
+
 type Options = {
   map: OptionsMap
 };
@@ -38,12 +46,20 @@ function createFunc(comp, propName, funcName) {
   };
 }
 
-function createFuncsAndProps(comp, map) {
+function createFuncsAndProps(comp: Comp, map: OptionsMap): Mapped {
   return Object.keys(map).reduce(
     (result, propName) => {
       const funcName = map[propName];
       result.funcs[funcName] = createFunc(comp, propName, funcName);
-      result.props[propName] = getPropValue(comp, propName);
+      Object.defineProperty(result.props, propName, {
+        enumerable: true,
+        get() {
+          const { props, state } = comp;
+          return propName in props
+            ? props[propName]
+            : propName in state ? state[propName] : props.defaults[propName];
+        }
+      });
       return result;
     },
     {
@@ -53,24 +69,22 @@ function createFuncsAndProps(comp, map) {
   );
 }
 
-function getPropValue(comp, propName) {
-  const { props, state } = comp;
-  return propName in props
-    ? props[propName]
-    : propName in state ? state[propName] : props.defaults[propName];
-}
-
-export const withValue = (Comp: Class<Component<any>>, options: Options) => {
+export const withValue = (Comp: Ctor, options: Options) => {
   options = { ...defaultOptions, ...options };
   return class extends Component<Props, State> {
+    mapped: Mapped;
     static defaultProps = {
       defaults: {
         value: ""
       }
     };
     state = {};
+    constructor(props: Props) {
+      super(props);
+      this.mapped = createFuncsAndProps(this, options.map);
+    }
     render() {
-      const { funcs, props } = createFuncsAndProps(this, options.map);
+      const { funcs, props } = this.mapped;
       return <Comp {...this.props} {...funcs} {...props} />;
     }
   };
