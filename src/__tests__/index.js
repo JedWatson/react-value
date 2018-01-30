@@ -32,16 +32,11 @@ test("onChange", () => {
 
   expect(spy).toHaveBeenCalledTimes(0);
   expect(input.props()).toMatchObject({ value: "" });
+
   input.simulate("change", 1);
+
   expect(spy).toHaveBeenCalledTimes(1);
   expect(input.props()).toMatchObject({ value: "" });
-});
-
-test("value (alone to test controlled / uncontrolled warnings)", () => {
-  const wrapper = mount(<InputWrapped value={1} />);
-  const input = wrapper.find("input");
-
-  expect(input.props()).toMatchObject({ value: 1 });
 });
 
 test("onChange + value", () => {
@@ -51,7 +46,9 @@ test("onChange + value", () => {
 
   expect(spy).toHaveBeenCalledTimes(0);
   expect(input.props()).toMatchObject({ value: 1 });
+
   input.simulate("change", 1);
+
   expect(spy).toHaveBeenCalledTimes(1);
   expect(input.props()).toMatchObject({ value: 1 });
 });
@@ -78,4 +75,11 @@ test("custom mapping", () => {
 
   expect(spy1).toHaveBeenCalledWith("1");
   expect(spy2).toHaveBeenCalledWith("2");
+});
+
+test("defaults", () => {
+  const wrapper = mount(<InputWrapped defaults={{ value: "test" }} />);
+  const input = wrapper.find("input");
+
+  expect(input.props()).toMatchObject({ value: "test" });
 });
