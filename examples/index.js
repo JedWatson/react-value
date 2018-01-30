@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
-import { withValue } from "react-value";
-import "./index.css";
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import { withValue } from 'react-value';
+import './index.css';
 
 const inc = i => (i || 0) + 1;
 
@@ -24,7 +24,7 @@ class Input extends Component {
 
 class InputWithMapping extends Component {
   onClick = () => {
-    this.props.altHandler(inc(this.props.value));
+    this.props.altHandler(inc(this.props.altProp));
   };
   render() {
     return (
@@ -36,9 +36,41 @@ class InputWithMapping extends Component {
   }
 }
 
+class Toggle extends Component {
+  handleToggle = () => {
+    if (this.props.isOpen) {
+      this.props.onClose();
+    } else {
+      this.props.onOpen();
+    }
+  };
+  render() {
+    return (
+      <button onClick={this.handleToggle}>
+        Toggle ({this.props.isOpen ? 'open' : 'closed'})
+      </button>
+    );
+  }
+}
+
 const Example = withValue(Input);
 const ExampleWithMapping = withValue(InputWithMapping, {
-  altProp: "altHandler"
+  altProp: {
+    defaultName: 'defaultAltProp',
+    handlers: {
+      altHandler: v => v,
+    },
+  },
+});
+const ExampleWithMultiProps = withValue(Toggle, {
+  isOpen: {
+    defaultName: 'isOpenByDefault',
+    defaultValue: false,
+    handlers: {
+      onClose: () => false,
+      isOpen: () => true,
+    },
+  },
 });
 
 class App extends Component {
@@ -60,16 +92,25 @@ class App extends Component {
         </p>
 
         <h3>Basic Example (uncontrolled)</h3>
-        <Example onChange={logChange("Basic")} defaults={{ value: 1 }} />
+        <Example onChange={logChange('Basic')} defaultValue={1} />
 
         <h3>Default Value (controlled)</h3>
-        <Example onChange={logChange("Default value")} value={2} />
+        <Example onChange={logChange('Default value')} defaultValue={2} />
 
-        <h3>Alternate Prop Names (controlled)</h3>
-        <ExampleWithMapping altHandler={logChange("Alt Props")} altProp={3} />
+        <h3>Alternate Prop Names (uncontrolled)</h3>
+        <ExampleWithMapping
+          altHandler={logChange('Alt Props')}
+          defaultAltProp={3}
+        />
+
+        <h3>Handling several props via a single map</h3>
+        <ExampleWithMultiProps
+          onClose={logChange('Closed')}
+          onOpen={logChange('Open')}
+        />
       </div>
     );
   }
 }
 
-ReactDOM.render(<App />, document.getElementById("app"));
+ReactDOM.render(<App />, document.getElementById('app'));
