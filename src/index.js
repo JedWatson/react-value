@@ -64,7 +64,9 @@ export const withValue = (Comp: Class<Component<any>>, options: Options) => {
   options = { ...defaultOptions, ...options };
   return class extends Component<Props, State> {
     static defaultProps = {
-      defaults: {}
+      defaults: {
+        value: ""
+      }
     };
     state = {};
     render() {

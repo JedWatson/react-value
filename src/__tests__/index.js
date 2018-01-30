@@ -31,10 +31,10 @@ test("onChange", () => {
   const input = wrapper.find("input");
 
   expect(spy).toHaveBeenCalledTimes(0);
-  expect(input.props()).toMatchObject({ value: undefined });
+  expect(input.props()).toMatchObject({ value: "" });
   input.simulate("change", 1);
   expect(spy).toHaveBeenCalledTimes(1);
-  expect(input.props()).toMatchObject({ value: undefined });
+  expect(input.props()).toMatchObject({ value: "" });
 });
 
 test("value (alone to test controlled / uncontrolled warnings)", () => {
