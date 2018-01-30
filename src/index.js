@@ -10,6 +10,16 @@ type OptionsMap = {
   [string]: string
 };
 
+type Props = {
+  defaults: {
+    [string]: any
+  }
+};
+
+type State = {
+  [string]: any
+};
+
 const defaultOptions: Options = {
   map: {
     value: "onChange"
@@ -19,7 +29,9 @@ const defaultOptions: Options = {
 function createFunc(comp, propName, funcName) {
   return function(value: any) {
     const func = comp.props[funcName];
-    comp.setState({ [propName]: value });
+    if (!(propName in comp.props)) {
+      comp.setState({ [propName]: value });
+    }
     if (typeof func === "function") {
       func(value);
     }
@@ -31,7 +43,7 @@ function createFuncsAndProps(comp, map) {
     (result, propName) => {
       const funcName = map[propName];
       result.funcs[funcName] = createFunc(comp, propName, funcName);
-      result.props[propName] = comp.props[propName];
+      result.props[propName] = getPropValue(comp, propName);
       return result;
     },
     {
@@ -41,12 +53,23 @@ function createFuncsAndProps(comp, map) {
   );
 }
 
-export const withValue = (Comp: Class<Component<*>>, options: Options) => {
+function getPropValue(comp, propName) {
+  const { props, state } = comp;
+  return propName in props
+    ? props[propName]
+    : propName in state ? state[propName] : props.defaults[propName];
+}
+
+export const withValue = (Comp: Class<Component<any>>, options: Options) => {
   options = { ...defaultOptions, ...options };
-  return class extends Component<Object, Object> {
+  return class extends Component<Props, State> {
+    static defaultProps = {
+      defaults: {}
+    };
+    state = {};
     render() {
-      const mapped = createFuncsAndProps(this, options.map);
-      return <Comp {...this.props} {...mapped.funcs} {...mapped.props} />;
+      const { funcs, props } = createFuncsAndProps(this, options.map);
+      return <Comp {...this.props} {...funcs} {...props} />;
     }
   };
 };
